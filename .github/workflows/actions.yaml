@@ -1,0 +1,60 @@
+name: dev-build-sm-sender-log-insert
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/actions.yaml
+      - 'send-command-test/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  send-command-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download and Install Oracle JDK 8
+        run: |
+          sudo apt update
+          sudo apt install -y wget tar
+          wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" \
+            "https://download.oracle.com/otn/java/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz"
+          sudo mkdir -p /usr/lib/jvm
+          sudo tar -zxf jdk-8u202-linux-x64.tar.gz -C /usr/lib/jvm
+          sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.8.0_202/bin/java 1
+          sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.8.0_202/bin/javac 1
+          sudo update-alternatives --set java /usr/lib/jvm/jdk1.8.0_202/bin/java
+          sudo update-alternatives --set javac /usr/lib/jvm/jdk1.8.0_202/bin/javac
+          java -version
+
+#      - name: Configure AWS Credentials
+#        uses: aws-actions/configure-aws-credentials@v2
+#        with:
+##          role-to-assume: ${{ secrets.DEV_AWS_ROLE_ARN }}
+#          aws-region: ap-northeast-3
+#      - name: Upload files
+#        run: |
+#          aws s3 cp smSenderLogInsert.jar s3://anpi-deploy-sm-sender-log-insert-aos-dev/
+#          aws s3 cp smSenderLogInsert.sh s3://anpi-deploy-sm-sender-log-insert-aos-dev/
+#        working-directory: smSenderLogInsert
+#      - name: Deploy with AWS Systems Manager Run Command
+#        run: |
+#          aws ssm send-command \
+#            --document-name 'AWS-RunShellScript' \
+#            --instance-ids 'i-0252b299c4b11ea17' \
+#            --parameters 'commands=[
+#              "bash -c \"aws s3 cp s3://anpi-deploy-sm-sender-log-insert-aos-dev/smSenderLogInsert.jar /usr/local/anpi/smSenderLogInsert/smSenderLogInsert/classes/ > /tmp/deploy.log 2>&1\"",
+#              "bash -c \"aws s3 cp s3://anpi-deploy-sm-sender-log-insert-aos-dev/smSenderLogInsert.sh /usr/local/anpi/smSenderLogInsert/smSenderLogInsert/ >> /tmp/deploy.log 2>&1\"",
+#              "bash -c \"chmod 755 /usr/local/anpi/smSenderLogInsert/smSenderLogInsert/smSenderLogInsert.sh\""
+#            ]' \
+#            --timeout-seconds 60 \
+#            --region ap-northeast-3
+#        working-directory: smSenderLogInsert
