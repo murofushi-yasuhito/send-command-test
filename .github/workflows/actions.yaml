@@ -24,7 +24,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role"
+          role-to-assume: "arn:aws:iam::077986094693:role/github-actions-role"
           aws-region: ap-northeast-3
       - name: AWS Systems Manager Run Command
         run: |
