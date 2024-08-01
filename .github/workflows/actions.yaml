@@ -35,33 +35,24 @@ jobs:
 #          sudo update-alternatives --set javac /usr/lib/jvm/jdk1.8.0_411/bin/javac
 #          java -version
 
-      # これはうまくいく
-#      - name: Download and Install OpenJDK 8
-#        run: |
-#          sudo apt update
-#          sudo apt install -y openjdk-8-jdk
-#          java -version
-
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v2
-#        with:
-##          role-to-assume: ${{ secrets.DEV_AWS_ROLE_ARN }}
-#          aws-region: ap-northeast-3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role"
+          aws-region: ap-northeast-3
 #      - name: Upload files
 #        run: |
 #          aws s3 cp smSenderLogInsert.jar s3://anpi-deploy-sm-sender-log-insert-aos-dev/
 #          aws s3 cp smSenderLogInsert.sh s3://anpi-deploy-sm-sender-log-insert-aos-dev/
 #        working-directory: smSenderLogInsert
-#      - name: Deploy with AWS Systems Manager Run Command
-#        run: |
-#          aws ssm send-command \
-#            --document-name 'AWS-RunShellScript' \
-#            --instance-ids 'i-0252b299c4b11ea17' \
-#            --parameters 'commands=[
-#              "bash -c \"aws s3 cp s3://anpi-deploy-sm-sender-log-insert-aos-dev/smSenderLogInsert.jar /usr/local/anpi/smSenderLogInsert/smSenderLogInsert/classes/ > /tmp/deploy.log 2>&1\"",
-#              "bash -c \"aws s3 cp s3://anpi-deploy-sm-sender-log-insert-aos-dev/smSenderLogInsert.sh /usr/local/anpi/smSenderLogInsert/smSenderLogInsert/ >> /tmp/deploy.log 2>&1\"",
-#              "bash -c \"chmod 755 /usr/local/anpi/smSenderLogInsert/smSenderLogInsert/smSenderLogInsert.sh\""
-#            ]' \
-#            --timeout-seconds 60 \
-#            --region ap-northeast-3
+      - name: AWS Systems Manager Run Command
+        run: |
+          aws ssm send-command \
+            --document-name 'AWS-RunShellScript' \
+            --instance-ids 'i-0d07d73506749f278' \
+            --parameters 'commands=[
+              "bash -c \"ls -la\""
+            ]' \
+            --timeout-seconds 60 \
+            --region ap-northeast-1
 #        working-directory: smSenderLogInsert
