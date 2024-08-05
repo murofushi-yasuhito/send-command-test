@@ -1,4 +1,4 @@
-name: dev-build-sm-sender-log-insert
+name: ssm-send-command-test
 
 on:
   workflow_dispatch:
@@ -32,8 +32,7 @@ jobs:
             --document-name 'AWS-RunShellScript' \
             --instance-ids 'i-0d07d73506749f278' \
             --parameters 'commands=[
-              "bash -c \"ls -la\""
+              "bash -c \"touch ssm-send-command-test.txt\""
             ]' \
             --timeout-seconds 60 \
             --region ap-northeast-1
-#        working-directory: smSenderLogInsert
